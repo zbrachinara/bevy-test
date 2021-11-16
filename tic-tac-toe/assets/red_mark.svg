@@ -4,7 +4,7 @@
 <svg
    width="200"
    height="200"
-   viewBox="0 0 52.916665 52.916668"
+   viewBox="0 0 200 200"
    version="1.1"
    id="svg5"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20, custom)"
@@ -24,16 +24,17 @@
      inkscape:document-units="px"
      showgrid="false"
      units="px"
-     inkscape:zoom="1.3475"
-     inkscape:cx="78.293135"
-     inkscape:cy="99.072356"
-     inkscape:window-width="1366"
-     inkscape:window-height="750"
-     inkscape:window-x="0"
-     inkscape:window-y="18"
+     inkscape:zoom="2.405"
+     inkscape:cx="100"
+     inkscape:cy="100"
+     inkscape:window-width="1354"
+     inkscape:window-height="756"
+     inkscape:window-x="6"
+     inkscape:window-y="6"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
-     width="200px" />
+     width="200px"
+     scale-x="1" />
   <defs
      id="defs2" />
   <g
@@ -41,12 +42,8 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="fill:none;stroke:#ff0000;stroke-width:1.32291666;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="M 51.552601,51.559269 C 1.3349308,1.3249665 1.3349308,1.3249665 1.3349308,1.3249665 v 0"
-       id="path285" />
-    <path
-       style="fill:none;stroke:#ff0000;stroke-width:1.32292;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 1.3349308,51.559269 C 51.552601,1.3249665 51.552601,1.3249665 51.552601,1.3249665 v 0"
-       id="path1308" />
+       id="path1308"
+       style="fill:none;stroke:#ff0000;stroke-width:5.16814;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 1.732562,197.80775 C 198.26743,1.9155037 198.26743,1.9155037 198.26743,1.9155037 v 0 m 0,195.8922463 C 1.732562,1.9155037 1.732562,1.9155037 1.732562,1.9155037 v 0" />
   </g>
 </svg>
