@@ -1,15 +1,18 @@
+use bevy::input::mouse::MouseButtonInput;
 use bevy::prelude::*;
 use std::path::{Path, PathBuf};
-use bevy::input::mouse::MouseButtonInput;
-use bevy::render::camera::Camera;
 
 use crate::gridcell::Pos;
 use bevy_svg::prelude::*;
 
 mod gridcell;
 
+struct MainCamera;
+
 fn make_scene(mut commands: Commands) {
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands
+        .spawn_bundle(OrthographicCameraBundle::new_2d())
+        .insert(MainCamera);
     let root = PathBuf::from("tic-tac-toe/assets");
     let (red, blue, bbox) = {
         let (mut red, mut blue, mut bbox) = (root.clone(), root.clone(), root.clone());
@@ -31,15 +34,30 @@ fn make_scene(mut commands: Commands) {
             })
         });
     });
-
-    // commands.spawn_bundle(blue);
 }
 
-fn mouse(windows: Res<Windows>, camera: Query<&Transform, With<Camera>>) -> Vec2 {
-    Vec2::new(0.0, 0.0)
+fn mouse(windows: Res<Windows>, camera: Query<&Transform, With<MainCamera>>) -> Option<Vec2> {
+    let window = windows.get_primary().unwrap();
+    if let Some((pos, camera_transform)) = window.cursor_position().zip(camera.single().ok()) {
+        let size = Vec2::new(window.width(), window.height());
+        let pos = (pos - size / 2.0)
+            // extend to vec4
+            .extend(0.0)
+            .extend(1.0);
+        let world_pos = camera_transform.compute_matrix() * pos;
+
+        Some(Vec2::new(world_pos.x, world_pos.y))
+    } else {
+        None
+    }
 }
 
-fn map_click_to_gridcell(pos: In<Vec2>, ev: EventReader<MouseButtonInput>) {
+fn map_click_to_gridcell(pos: In<Option<Vec2>>, mut ev: EventReader<MouseButtonInput>) {
+    ev.iter().for_each(|ev| {
+        if let Some(pos) = pos.0 {
+            println!("Cursor located in-world at {}, {}", pos.x, pos.y);
+        }
+    })
 }
 
 fn main() {
