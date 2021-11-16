@@ -24,7 +24,6 @@ impl<P: AsRef<Path> + Send + Sync + 'static> Command for AddGridCell<P> {
             .spawn()
             .insert_bundle(
                 SvgBuilder::from_file(self.red)
-                    .position(transform)
                     .build()
                     .unwrap(),
             )
@@ -33,7 +32,6 @@ impl<P: AsRef<Path> + Send + Sync + 'static> Command for AddGridCell<P> {
             .spawn()
             .insert_bundle(
                 SvgBuilder::from_file(self.blue)
-                    .position(transform)
                     .build()
                     .unwrap(),
             )
@@ -42,7 +40,6 @@ impl<P: AsRef<Path> + Send + Sync + 'static> Command for AddGridCell<P> {
             .spawn()
             .insert_bundle(
                 SvgBuilder::from_file(self.bbox)
-                    .position(transform)
                     .build()
                     .unwrap(),
             )
