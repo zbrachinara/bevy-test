@@ -2,7 +2,7 @@ use bevy::input::mouse::MouseButtonInput;
 use bevy::prelude::*;
 use std::path::{Path, PathBuf};
 
-use crate::gridcell::Pos;
+use crate::gridcell::{coord_to_pos, Pos};
 use bevy_svg::prelude::*;
 
 mod gridcell;
@@ -55,7 +55,7 @@ fn mouse(windows: Res<Windows>, camera: Query<&Transform, With<MainCamera>>) -> 
 fn map_click_to_gridcell(pos: In<Option<Vec2>>, mut ev: EventReader<MouseButtonInput>) {
     ev.iter().for_each(|ev| {
         if let Some(pos) = pos.0 {
-            println!("Cursor located in-world at {}, {}", pos.x, pos.y);
+            println!("Cursor located in-world at {:?}", coord_to_pos(pos));
         }
     })
 }

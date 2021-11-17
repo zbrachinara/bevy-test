@@ -5,6 +5,14 @@ use std::path::Path;
 
 const SIZE: f32 = 200.0;
 
+// #[inline]
+pub fn coord_to_pos(mut coord: Vec2) -> Pos {
+    coord += Vec2::new(SIZE/2.0, SIZE/2.0);
+    println!("Adjusted coord at: {:?}", coord);
+
+    Pos((coord.x / 200.0).floor() as i8, (coord.y / 200.0).floor() as i8)
+}
+
 pub struct AddGridCell<P>
 where
     P: AsRef<Path> + Send + Sync + 'static,
@@ -66,7 +74,7 @@ enum Player {
 #[derive(Default)]
 struct GridCell;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Pos(pub i8, pub i8);
 
 struct ClickedBy(Player);
