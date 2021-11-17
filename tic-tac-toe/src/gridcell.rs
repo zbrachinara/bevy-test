@@ -3,8 +3,11 @@ use bevy::prelude::*;
 use bevy_svg::prelude::*;
 use std::path::Path;
 
+const SIZE: f32 = 200.0;
+
 pub struct AddGridCell<P>
-where P: AsRef<Path> + Send + Sync + 'static
+where
+    P: AsRef<Path> + Send + Sync + 'static,
 {
     pub pos: Pos,
     pub red: P,
@@ -14,16 +17,18 @@ where P: AsRef<Path> + Send + Sync + 'static
 
 impl<P: AsRef<Path> + Send + Sync + 'static> Command for AddGridCell<P> {
     fn write(self: Box<Self>, world: &mut World) {
-        let transform = Vec3::new(
-            self.pos.0 as f32 * 200f32,
-            self.pos.1 as f32 as f32 * 200f32,
-            0.0,
-        );
+        let transform = Vec2::new(self.pos.0 as f32 * SIZE, self.pos.1 as f32 * SIZE);
 
         let build = |world: &mut World, path: P| {
             world
                 .spawn()
-                .insert_bundle(SvgBuilder::from_file(path).build().unwrap())
+                .insert_bundle(
+                    SvgBuilder::from_file(path)
+                        .origin(Origin::Center)
+                        .scale(Vec2::new(SIZE / 200.0, SIZE / 200.0))
+                        .build()
+                        .unwrap(),
+                )
                 .id()
         };
 
@@ -35,7 +40,7 @@ impl<P: AsRef<Path> + Send + Sync + 'static> Command for AddGridCell<P> {
             .spawn()
             .insert_bundle(GridCellBundle {
                 pos: self.pos,
-                transform: Transform::from_translation(transform),
+                transform: Transform::from_translation(transform.extend(0.0)),
                 ..Default::default()
             })
             .id();
@@ -62,6 +67,6 @@ enum Player {
 struct GridCell;
 
 #[derive(Default)]
-pub struct Pos(pub u8, pub u8);
+pub struct Pos(pub i8, pub i8);
 
 struct ClickedBy(Player);
