@@ -60,11 +60,18 @@ fn map_click_to_gridcell(pos: In<Option<Vec2>>, mut ev: EventReader<MouseButtonI
     })
 }
 
+fn bad_hider(mut q: Query<&mut Visible, With<gridcell::Marker>>) {
+    q.iter_mut().for_each(|mut visible| {
+        visible.is_visible = false;
+    })
+}
+
 fn main() {
     App::build()
         .add_plugins(DefaultPlugins)
         .add_plugin(SvgPlugin)
         .add_startup_system(make_scene.system())
         .add_system(mouse.system().chain(map_click_to_gridcell.system()))
+        .add_system(bad_hider.system())
         .run()
 }

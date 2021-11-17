@@ -42,9 +42,22 @@ impl<P: AsRef<Path> + Send + Sync + 'static> Command for AddGridCell<P> {
                 )
                 .id()
         };
+        let build_marker = |world: &mut World, path: P| {
+            world
+                .spawn()
+                .insert_bundle(
+                    SvgBuilder::from_file(path)
+                        .origin(Origin::Center)
+                        .scale(Vec2::new(SIZE / 200.0, SIZE / 200.0))
+                        .build()
+                        .unwrap(),
+                )
+                .insert(Marker)
+                .id()
+        };
 
-        let red = build(world, self.red);
-        let blue = build(world, self.blue);
+        let red = build_marker(world, self.red);
+        let blue = build_marker(world, self.blue);
         let bbox = build(world, self.bbox);
 
         let cell = world
@@ -76,8 +89,7 @@ enum Player {
 
 #[derive(Default)]
 struct GridCell;
+pub struct Marker;
 
 #[derive(Default, Debug)]
 pub struct Pos(pub i8, pub i8);
-
-struct ClickedBy(Player);
