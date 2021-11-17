@@ -20,37 +20,16 @@ impl<P: AsRef<Path> + Send + Sync + 'static> Command for AddGridCell<P> {
             0.0,
         );
 
-        let red = world
-            .spawn()
-            .insert_bundle(
-                SvgBuilder::from_file(self.red)
-                    .build()
-                    .unwrap(),
-            )
-            .id();
-        let blue = world
-            .spawn()
-            .insert_bundle(
-                SvgBuilder::from_file(self.blue)
-                    .build()
-                    .unwrap(),
-            )
-            .id();
-        let bbox = world
-            .spawn()
-            .insert_bundle(
-                SvgBuilder::from_file(self.bbox)
-                    .build()
-                    .unwrap(),
-            )
-            .id();
+        let build = |world: &mut World, path: P| {
+            world
+                .spawn()
+                .insert_bundle(SvgBuilder::from_file(path).build().unwrap())
+                .id()
+        };
 
-        // world
-        //     .entity_mut(red.clone())
-        //     .get_mut::<Visible>()
-        //     .map(|mut visible| {
-        //         visible.is_transparent = true;
-        //     });
+        let red = build(world, self.red);
+        let blue = build(world, self.blue);
+        let bbox = build(world, self.bbox);
 
         let cell = world
             .spawn()
