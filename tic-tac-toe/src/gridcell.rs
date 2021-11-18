@@ -8,7 +8,6 @@ const SIZE: f32 = 200.0;
 // #[inline]
 pub fn coord_to_pos(mut coord: Vec2) -> Pos {
     coord += Vec2::new(SIZE / 2.0, SIZE / 2.0);
-    println!("Adjusted coord at: {:?}", coord);
 
     Pos(
         (coord.x / SIZE).floor() as i8,
