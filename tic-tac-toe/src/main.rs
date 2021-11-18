@@ -1,4 +1,5 @@
 use bevy::input::mouse::MouseButtonInput;
+use bevy::input::ElementState;
 use bevy::prelude::*;
 use std::path::{Path, PathBuf};
 
@@ -52,12 +53,24 @@ fn mouse(windows: Res<Windows>, camera: Query<&Transform, With<MainCamera>>) -> 
     }
 }
 
-fn map_click_to_gridcell(pos: In<Option<Vec2>>, mut ev: EventReader<MouseButtonInput>) {
-    ev.iter().for_each(|ev| {
-        if let Some(pos) = pos.0 {
-            println!("Cursor located in-world at {:?}", coord_to_pos(pos));
-        }
-    })
+fn map_click_to_gridcell(
+    pos: In<Option<Vec2>>,
+    mut ev: EventReader<MouseButtonInput>,
+    cell: Query<(&Pos, &Children), With<gridcell::GridCell>>,
+    mut textures: Query<&mut Visible>,
+) {
+    ev.iter()
+        .filter(|ev| ev.state == ElementState::Pressed)
+        .for_each(|_| {
+            if let Some(coord) = pos.0 {
+                let child = cell
+                    .iter()
+                    .find(|(cell_pos, _)| cell_pos == &&coord_to_pos(coord))
+                    .map(|(_, children)| children.iter().nth(0).unwrap())
+                    .unwrap();
+                textures.get_mut(*child).unwrap().is_visible = true;
+            }
+        })
 }
 
 fn hide_markers(mut q: Query<&mut Visible, Added<gridcell::Marker>>) {
@@ -67,7 +80,6 @@ fn hide_markers(mut q: Query<&mut Visible, Added<gridcell::Marker>>) {
 }
 
 fn main() {
-
     static HIDER: &str = "hider";
     App::build()
         .add_plugins(DefaultPlugins)

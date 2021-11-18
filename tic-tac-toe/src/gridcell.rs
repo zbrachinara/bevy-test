@@ -88,8 +88,8 @@ enum Player {
 }
 
 #[derive(Default)]
-struct GridCell;
+pub struct GridCell;
 pub struct Marker;
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Pos(pub i8, pub i8);
