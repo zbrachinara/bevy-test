@@ -6,87 +6,14 @@ use std::path::{Path, PathBuf};
 use crate::gridcell::{coord_to_pos, Pos};
 use bevy_svg::prelude::*;
 
-mod gridcell;
+pub mod gridcell;
+mod logic;
 
-struct MainCamera;
-
-fn make_scene(mut commands: Commands) {
-    commands
-        .spawn_bundle(OrthographicCameraBundle::new_2d())
-        .insert(MainCamera);
-    let root = PathBuf::from("tic-tac-toe/assets");
-    let (red, blue, bbox) = {
-        let (mut red, mut blue, mut bbox) = (root.clone(), root.clone(), root.clone());
-
-        red.push("red_mark.svg");
-        blue.push("blue_mark.svg");
-        bbox.push("empty_cell.svg");
-
-        (red, blue, bbox)
-    };
-
-    (-1..=1).for_each(|x| {
-        (-1..=1).for_each(|y| {
-            commands.add(gridcell::AddGridCell {
-                pos: Pos(x, y),
-                red: red.clone(),
-                blue: blue.clone(),
-                bbox: bbox.clone(),
-            })
-        });
-    });
-}
-
-fn mouse(windows: Res<Windows>, camera: Query<&Transform, With<MainCamera>>) -> Option<Vec2> {
-    let window = windows.get_primary().unwrap();
-    if let Some((pos, camera_transform)) = window.cursor_position().zip(camera.single().ok()) {
-        let size = Vec2::new(window.width(), window.height());
-        let pos = (pos - size / 2.0)
-            // extend to vec4
-            .extend(0.0)
-            .extend(1.0);
-        let world_pos = camera_transform.compute_matrix() * pos;
-
-        Some(Vec2::new(world_pos.x, world_pos.y))
-    } else {
-        None
-    }
-}
-
-fn map_click_to_gridcell(
-    pos: In<Option<Vec2>>,
-    mut ev: EventReader<MouseButtonInput>,
-    cell: Query<(&Pos, &Children), With<gridcell::GridCell>>,
-    mut textures: Query<&mut Visible>,
-) {
-    ev.iter()
-        .filter(|ev| ev.state == ElementState::Pressed)
-        .for_each(|_| {
-            if let Some(coord) = pos.0 {
-                let child = cell
-                    .iter()
-                    .find(|(cell_pos, _)| cell_pos == &&coord_to_pos(coord))
-                    .map(|(_, children)| children.iter().nth(0).unwrap())
-                    .unwrap();
-                textures.get_mut(*child).unwrap().is_visible = true;
-            }
-        })
-}
-
-fn hide_markers(mut q: Query<&mut Visible, Added<gridcell::Marker>>) {
-    q.iter_mut().for_each(|mut visible| {
-        visible.is_visible = false;
-    })
-}
 
 fn main() {
-    static HIDER: &str = "hider";
     App::build()
         .add_plugins(DefaultPlugins)
         .add_plugin(SvgPlugin)
-        .add_startup_system(make_scene.system())
-        .add_system(mouse.system().chain(map_click_to_gridcell.system()))
-        .add_stage(HIDER, SystemStage::single_threaded())
-        .add_system_to_stage(HIDER, hide_markers.system())
+        .add_plugins(logic::GamePlugins)
         .run()
 }
