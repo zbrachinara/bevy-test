@@ -8,6 +8,11 @@ mod system;
 pub struct MainCamera;
 pub use system::CursorPosition;
 
+pub enum Player {
+    Red,
+    Blue,
+}
+
 fn make_ui(mut commands: Commands) {
     commands
         .spawn_bundle(OrthographicCameraBundle::new_2d())

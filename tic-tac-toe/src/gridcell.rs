@@ -2,6 +2,7 @@ use bevy::ecs::system::Command;
 use bevy::prelude::*;
 use bevy_svg::prelude::*;
 use std::path::Path;
+use crate::Player;
 
 const SIZE: f32 = 200.0;
 
@@ -79,11 +80,6 @@ struct GridCellBundle {
     owned_by: Option<Player>,
     transform: Transform,
     global_transform: GlobalTransform,
-}
-
-enum Player {
-    Red,
-    Blue,
 }
 
 #[derive(Default)]
