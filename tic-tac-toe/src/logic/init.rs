@@ -18,7 +18,7 @@ fn make_scene(mut commands: Commands) {
 
     (-1..=1).for_each(|x| {
         (-1..=1).for_each(|y| {
-            commands.add(gridcell::AddGridCell {
+            commands.add(AddGridCell {
                 pos: Pos(x, y),
                 red: red.clone(),
                 blue: blue.clone(),

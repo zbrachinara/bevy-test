@@ -2,9 +2,9 @@ mod in_game;
 mod init;
 
 mod prelude {
-    pub use bevy::prelude::*;
-    pub use crate::gridcell::{self, *};
     pub use super::MainCamera;
+    pub use crate::gridcell::*;
+    pub use bevy::prelude::*;
 }
 
 use bevy::app::PluginGroupBuilder;

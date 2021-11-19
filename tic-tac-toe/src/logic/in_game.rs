@@ -1,6 +1,6 @@
 use super::prelude::*;
-use bevy::input::ElementState;
 use bevy::input::mouse::MouseButtonInput;
+use bevy::input::ElementState;
 
 fn mouse(windows: Res<Windows>, camera: Query<&Transform, With<MainCamera>>) -> Option<Vec2> {
     let window = windows.get_primary().unwrap();
@@ -21,7 +21,7 @@ fn mouse(windows: Res<Windows>, camera: Query<&Transform, With<MainCamera>>) -> 
 fn map_click_to_gridcell(
     pos: In<Option<Vec2>>,
     mut ev: EventReader<MouseButtonInput>,
-    cell: Query<(&Pos, &Children), With<gridcell::GridCell>>,
+    cell: Query<(&Pos, &Children), With<GridCell>>,
     mut textures: Query<&mut Visible>,
 ) {
     ev.iter()
