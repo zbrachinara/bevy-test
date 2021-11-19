@@ -20,14 +20,14 @@ fn click_gridcell(
             if let Some(coord) = **pos {
                 if let Some((_, child, mut owner)) = cell
                     .iter_mut()
-                    .find(|(cell_pos, _, _)| cell_pos == &&coord_to_pos(coord))
+                    .find(|(cell_pos, _, _)| **cell_pos == coord_to_pos(coord))
                 {
                     let tex_entity = {
                         let mut child = child.iter();
                         let textures = (child.next().unwrap(), child.next().unwrap());
-                        match &*turn {
-                            &Turn(Player::Red) => textures.0,
-                            &Turn(Player::Blue) => textures.1,
+                        match *turn {
+                            Turn(Player::Red) => textures.0,
+                            Turn(Player::Blue) => textures.1,
                         }
                     };
 
