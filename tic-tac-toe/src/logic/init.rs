@@ -2,9 +2,6 @@ use super::prelude::*;
 use std::path::PathBuf;
 
 fn make_scene(mut commands: Commands) {
-    commands
-        .spawn_bundle(OrthographicCameraBundle::new_2d())
-        .insert(MainCamera);
     let root = PathBuf::from("tic-tac-toe/assets");
     let (red, blue, bbox) = {
         let (mut red, mut blue, mut bbox) = (root.clone(), root.clone(), root.clone());
