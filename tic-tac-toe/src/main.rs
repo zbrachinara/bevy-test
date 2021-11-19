@@ -8,6 +8,7 @@ mod system;
 pub struct MainCamera;
 pub use system::CursorPosition;
 
+#[derive(Debug)]
 pub enum Player {
     Red,
     Blue,
