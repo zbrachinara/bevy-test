@@ -8,10 +8,19 @@ mod system;
 pub struct MainCamera;
 pub use system::CursorPosition;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Player {
     Red,
     Blue,
+}
+
+impl Player {
+    fn switch(&mut self) {
+        match self {
+            Player::Red => *self = Self::Blue,
+            Player::Blue => *self = Self::Red,
+        }
+    }
 }
 
 fn make_ui(mut commands: Commands) {

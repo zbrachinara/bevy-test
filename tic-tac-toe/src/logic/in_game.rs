@@ -31,7 +31,16 @@ fn click_gridcell(
                         }
                     };
 
-                    textures.get_mut(*tex_entity).unwrap().is_visible = true;
+                    println!("{:?}", *turn);
+
+                    match *owner {
+                        None => {
+                            textures.get_mut(*tex_entity).unwrap().is_visible = true;
+                            *owner = Some(turn.0.clone());
+                            (*turn).0.switch();
+                        }
+                        Some(_) => {}
+                    }
                 }
             }
         })
