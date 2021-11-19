@@ -12,28 +12,27 @@ fn click_gridcell(
     mut ev: EventReader<MouseButtonInput>,
     mut cell: Query<(&Pos, &Children, &mut Option<Player>), With<GridCell>>,
     mut textures: Query<&mut Visible>,
-    mut turn: ResMut<Turn>
+    mut turn: ResMut<Turn>,
 ) {
     ev.iter()
         .filter(|ev| ev.state == ElementState::Pressed)
         .for_each(|_| {
             if let Some(coord) = **pos {
-                let (_, child, mut owner) = cell
+                if let Some((_, child, mut owner)) = cell
                     .iter_mut()
                     .find(|(cell_pos, _, _)| cell_pos == &&coord_to_pos(coord))
-                    .unwrap();
-                let tex_entity = {
-                    let mut child = child.iter();
-                    let textures = (child.next().unwrap(), child.next().unwrap());
-                    match &*turn {
-                        &Turn(Player::Red) => textures.0,
-                        &Turn(Player::Blue) => textures.1,
-                    }
+                {
+                    let tex_entity = {
+                        let mut child = child.iter();
+                        let textures = (child.next().unwrap(), child.next().unwrap());
+                        match &*turn {
+                            &Turn(Player::Red) => textures.0,
+                            &Turn(Player::Blue) => textures.1,
+                        }
+                    };
 
-                };
-                println!("{:?}", *turn);
-
-                textures.get_mut(*tex_entity).unwrap().is_visible = true;
+                    textures.get_mut(*tex_entity).unwrap().is_visible = true;
+                }
             }
         })
 }
