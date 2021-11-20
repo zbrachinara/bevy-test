@@ -2,12 +2,18 @@ mod in_game;
 mod init;
 
 mod prelude {
+    pub use super::GameStates;
     pub use crate::gridcell::*;
     pub use bevy::prelude::*;
 }
 
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
+
+pub enum GameStates {
+    Playing,
+    Won,
+}
 
 pub struct GamePlugins;
 impl PluginGroup for GamePlugins {

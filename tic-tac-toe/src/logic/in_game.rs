@@ -1,9 +1,10 @@
-use std::ops::{Deref, DerefMut};
 use super::prelude::*;
 use crate::CursorPosition;
 use crate::Player;
 use bevy::input::mouse::MouseButtonInput;
 use bevy::input::ElementState;
+use std::mem::MaybeUninit;
+use std::ops::{Deref, DerefMut};
 
 #[derive(Debug)]
 struct Turn(Player);
@@ -27,7 +28,9 @@ fn click_gridcell(
     mut cell: Query<(&Pos, &Children, &mut Option<Player>), With<GridCell>>,
     mut textures: Query<&mut Visible>,
     mut turn: ResMut<Turn>,
-) {
+) -> bool {
+    let mut updated = false;
+
     ev.iter()
         .filter(|ev| ev.state == ElementState::Pressed)
         .for_each(|_| {
@@ -50,18 +53,36 @@ fn click_gridcell(
                             textures.get_mut(*tex_entity).unwrap().is_visible = true;
                             *owner = Some(turn.0.clone());
                             turn.switch();
+                            updated = true;
                         }
                         Some(_) => {}
                     }
                 }
             }
-        })
+        });
+
+    updated
+}
+
+fn check_winner(updated: In<bool>, cells: Query<(&Pos, &Option<Player>), With<GridCell>>) {
+    if updated.0 {
+        let grid: [[Option<Player>; 3]; 3] = unsafe {
+            let mut arr: [[MaybeUninit<Option<Player>>; 3]; 3] =
+                MaybeUninit::uninit().assume_init();
+            cells.iter().for_each(|(Pos(x, y), player)| {
+                arr[(x + 1) as usize][(y + 1) as usize].write(player.clone());
+            });
+            core::mem::transmute::<_, [[Option<Player>; 3]; 3]>(arr)
+        };
+
+        println!("State of board: {:?}", grid);
+    }
 }
 
 pub struct GameLogic;
 impl Plugin for GameLogic {
     fn build(&self, app: &mut AppBuilder) {
         app.insert_resource(Turn(Player::Red))
-            .add_system(click_gridcell.system());
+            .add_system(click_gridcell.system().chain(check_winner.system()));
     }
 }
