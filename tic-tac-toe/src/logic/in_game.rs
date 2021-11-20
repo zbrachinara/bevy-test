@@ -1,3 +1,4 @@
+use std::ops::{Deref, DerefMut};
 use super::prelude::*;
 use crate::CursorPosition;
 use crate::Player;
@@ -6,6 +7,19 @@ use bevy::input::ElementState;
 
 #[derive(Debug)]
 struct Turn(Player);
+impl Deref for Turn {
+    type Target = Player;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Turn {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
 
 fn click_gridcell(
     pos: Res<CursorPosition>,
@@ -31,13 +45,11 @@ fn click_gridcell(
                         }
                     };
 
-                    println!("{:?}", *turn);
-
                     match *owner {
                         None => {
                             textures.get_mut(*tex_entity).unwrap().is_visible = true;
                             *owner = Some(turn.0.clone());
-                            (*turn).0.switch();
+                            turn.switch();
                         }
                         Some(_) => {}
                     }
