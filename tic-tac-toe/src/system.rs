@@ -1,4 +1,3 @@
-use crate::MainCamera;
 use bevy::prelude::*;
 use std::ops::{Deref, DerefMut};
 
@@ -42,6 +41,13 @@ fn mouse(
     **position_res = position;
 }
 
+pub struct MainCamera;
+fn make_ui(mut commands: Commands) {
+    commands
+        .spawn_bundle(OrthographicCameraBundle::new_2d())
+        .insert(MainCamera);
+}
+
 pub struct GameSystem;
 impl Plugin for GameSystem {
     fn build(&self, app: &mut AppBuilder) {
@@ -52,6 +58,7 @@ impl Plugin for GameSystem {
                 CALCULATION_STAGE,
                 SystemStage::parallel(),
             )
-            .add_system_to_stage(CALCULATION_STAGE, mouse.system());
+            .add_system_to_stage(CALCULATION_STAGE, mouse.system())
+            .add_startup_system(make_ui.system());
     }
 }

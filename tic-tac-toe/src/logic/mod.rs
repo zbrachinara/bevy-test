@@ -2,7 +2,6 @@ mod in_game;
 mod init;
 
 mod prelude {
-    pub use crate::MainCamera;
     pub use crate::gridcell::*;
     pub use bevy::prelude::*;
 }
