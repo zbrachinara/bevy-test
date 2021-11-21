@@ -4,6 +4,7 @@ use bevy::input::mouse::MouseButtonInput;
 use bevy::input::ElementState;
 use std::iter::once;
 use std::ops::{Deref, DerefMut};
+use bevy::app::Events;
 
 #[derive(Debug)]
 struct Turn(Player);
@@ -131,8 +132,8 @@ fn has_winner(board: Array2D<Option<Player>>) -> Winner {
     }
 }
 
-fn drain_clicks(mut clicks: EventReader<MouseButtonInput>) {
-    clicks.iter().for_each(|_| {});
+fn drain_clicks(mut clicks: ResMut<Events<MouseButtonInput>>) {
+    clicks.drain();
 }
 
 fn reset_onclick(
@@ -160,8 +161,8 @@ impl Plugin for GameLogic {
             .insert_resource(Turn(Player::Red))
             .add_system_set(SystemSet::on_update(GameState::Playing).with_system(click_gridcell.system().chain(check_winner.system())))
             .add_system_set(SystemSet::on_enter(GameState::Won).with_system(drain_clicks.system()))
+            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(drain_clicks.system()))
             .add_system_set(SystemSet::on_update(GameState::Won).with_system(reset_onclick.system()))
-            // .add_system(click_gridcell.system().chain(check_winner.system()));
         ;
     }
 }
