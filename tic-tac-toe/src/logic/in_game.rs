@@ -3,7 +3,6 @@ use array2d::Array2D;
 use bevy::input::mouse::MouseButtonInput;
 use bevy::input::ElementState;
 use std::iter::once;
-use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 
 #[derive(Debug)]
@@ -73,7 +72,7 @@ fn click_gridcell(
 
 fn check_winner(updated: In<bool>, cells: Query<(&Pos, &Option<Player>), With<GridCell>>) {
     if updated.0 {
-        let grid: Array2D<Option<Player>> = unsafe {
+        let grid: Array2D<Option<Player>> = {
             let mut grid = Array2D::filled_with(None, 3, 3);
             cells.iter().for_each(|(Pos(x, y), player)| {
                 grid.get_mut((x + 1) as usize, (y + 1) as usize)
