@@ -40,6 +40,7 @@ fn click_gridcell(
     ev.iter()
         .filter(|ev| ev.state == ElementState::Pressed)
         .for_each(|_| {
+            println!("Gridcell system: press received");
             if let Some(coord) = **pos {
                 if let Some((_, child, mut owner)) = cell
                     .iter_mut()
@@ -70,7 +71,11 @@ fn click_gridcell(
     updated
 }
 
-fn check_winner(updated: In<bool>, cells: Query<(&Pos, &Option<Player>), With<GridCell>>) {
+fn check_winner(
+    updated: In<bool>,
+    cells: Query<(&Pos, &Option<Player>), With<GridCell>>,
+    mut state: ResMut<State<GameState>>,
+) {
     if updated.0 {
         let grid: Array2D<Option<Player>> = {
             let mut grid = Array2D::filled_with(None, 3, 3);
@@ -83,7 +88,12 @@ fn check_winner(updated: In<bool>, cells: Query<(&Pos, &Option<Player>), With<Gr
 
         println!("State of board: {:?}", grid);
 
-        println!("{:?}", has_winner(grid));
+        match has_winner(grid) {
+            Winner::Some(_) | Winner::Draw => {
+                state.set(GameState::Won);
+            }
+            _ => (),
+        };
     }
 }
 
@@ -107,11 +117,6 @@ fn has_winner(board: Array2D<Option<Player>>) -> Winner {
                 .collect::<Vec<_>>(),
         ));
 
-    // println!(
-    //     "Everything that wins: {:?}",
-    //     winning_sets.collect::<Vec<_>>()
-    // );
-
     let mut filled = true;
     for set in winning_sets {
         if let Some(Some(player)) = slice_all(set.as_slice()) {
@@ -129,10 +134,47 @@ fn has_winner(board: Array2D<Option<Player>>) -> Winner {
     }
 }
 
+fn drain_clicks(mut clicks: EventReader<MouseButtonInput>) {
+    println!("Started draining clicks");
+    clicks.iter().for_each(|_| {});
+    println!("Finished draining clicks");
+}
+
+fn reset_onclick(
+    mut clicks: EventReader<MouseButtonInput>,
+    mut textures: Query<&mut Visible, With<Marker>>,
+    mut cells: Query<&mut Option<Player>, With<GridCell>>,
+    mut state: ResMut<State<GameState>>,
+) {
+    println!("Looking for click to reset");
+    if let Some(_) = clicks
+        .iter()
+        .find(|x| x.button == MouseButton::Left && x.state == ElementState::Pressed)
+    {
+        textures.iter_mut().for_each(|mut tex| {
+            tex.is_visible = false;
+        });
+        cells.iter_mut().for_each(|mut owner| *owner = None);
+        state.set(GameState::Playing);
+    }
+    println!("State is: {:?}", *state)
+}
+
+fn test_clicks(mut ev: EventReader<MouseButtonInput>) {
+    ev.iter()
+        .for_each(|ev| println!("event received: {:?}", ev));
+}
+
 pub struct GameLogic;
 impl Plugin for GameLogic {
     fn build(&self, app: &mut AppBuilder) {
-        app.insert_resource(Turn(Player::Red))
-            .add_system(click_gridcell.system().chain(check_winner.system()));
+        app.add_state(GameState::Playing)
+            .add_system(test_clicks.system())
+            .insert_resource(Turn(Player::Red))
+            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(click_gridcell.system().chain(check_winner.system())))
+            // .add_system_set(SystemSet::on_enter(GameState::Won).with_system(drain_clicks.system()))
+            .add_system_set(SystemSet::on_update(GameState::Won).with_system(reset_onclick.system()))
+            // .add_system(click_gridcell.system().chain(check_winner.system()));
+        ;
     }
 }

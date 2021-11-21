@@ -2,7 +2,7 @@ mod in_game;
 mod init;
 
 mod prelude {
-    pub use super::GameStates;
+    pub use super::GameState;
     pub use crate::gridcell::*;
     pub use bevy::prelude::*;
     pub use crate::*;
@@ -11,7 +11,8 @@ mod prelude {
 use bevy::app::PluginGroupBuilder;
 use bevy::prelude::*;
 
-pub enum GameStates {
+#[derive(Clone, Eq, PartialEq, Debug, Hash)]
+pub enum GameState {
     Playing,
     Won,
 }
