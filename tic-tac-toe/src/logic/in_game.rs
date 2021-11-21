@@ -1,10 +1,9 @@
 use super::prelude::*;
-use crate::CursorPosition;
-use crate::Player;
 use bevy::input::mouse::MouseButtonInput;
 use bevy::input::ElementState;
 use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
+use array2d::Array2D;
 
 #[derive(Debug)]
 struct Turn(Player);
@@ -66,13 +65,12 @@ fn click_gridcell(
 
 fn check_winner(updated: In<bool>, cells: Query<(&Pos, &Option<Player>), With<GridCell>>) {
     if updated.0 {
-        let grid: [[Option<Player>; 3]; 3] = unsafe {
-            let mut arr: [[MaybeUninit<Option<Player>>; 3]; 3] =
-                MaybeUninit::uninit().assume_init();
+        let grid: Array2D<Option<Player>> = unsafe {
+            let mut grid = Array2D::filled_with(None, 3, 3);
             cells.iter().for_each(|(Pos(x, y), player)| {
-                arr[(x + 1) as usize][(y + 1) as usize].write(player.clone());
+                grid.get_mut((x + 1) as usize, (y + 1) as usize).map(|p| *p = player.clone());
             });
-            core::mem::transmute::<_, [[Option<Player>; 3]; 3]>(arr)
+            grid
         };
 
         println!("State of board: {:?}", grid);

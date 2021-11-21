@@ -7,7 +7,7 @@ mod system;
 
 pub use system::CursorPosition;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Player {
     Red,
     Blue,

@@ -5,6 +5,7 @@ mod prelude {
     pub use super::GameStates;
     pub use crate::gridcell::*;
     pub use bevy::prelude::*;
+    pub use crate::*;
 }
 
 use bevy::app::PluginGroupBuilder;
