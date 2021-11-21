@@ -1,8 +1,8 @@
-use std::iter::once;
 use super::prelude::*;
 use array2d::Array2D;
 use bevy::input::mouse::MouseButtonInput;
 use bevy::input::ElementState;
+use std::iter::once;
 use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
 
@@ -26,7 +26,7 @@ impl DerefMut for Turn {
 enum Winner {
     Some(Player),
     None,
-    Unwinnable,
+    Draw,
 }
 
 fn click_gridcell(
@@ -113,13 +113,21 @@ fn has_winner(board: Array2D<Option<Player>>) -> Winner {
     //     winning_sets.collect::<Vec<_>>()
     // );
 
+    let mut filled = true;
     for set in winning_sets {
         if let Some(Some(player)) = slice_all(set.as_slice()) {
-            return Winner::Some(player.clone())
+            return Winner::Some(player.clone());
+        }
+        if set.contains(&&None) {
+            filled = false;
         }
     }
 
-    Winner::None
+    if filled {
+        Winner::Draw
+    } else {
+        Winner::None
+    }
 }
 
 pub struct GameLogic;
