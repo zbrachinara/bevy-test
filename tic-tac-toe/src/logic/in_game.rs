@@ -1,9 +1,10 @@
+use std::iter::once;
 use super::prelude::*;
+use array2d::Array2D;
 use bevy::input::mouse::MouseButtonInput;
 use bevy::input::ElementState;
 use std::mem::MaybeUninit;
 use std::ops::{Deref, DerefMut};
-use array2d::Array2D;
 
 #[derive(Debug)]
 struct Turn(Player);
@@ -19,6 +20,13 @@ impl DerefMut for Turn {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
+}
+
+#[derive(Debug)]
+enum Winner {
+    Some(Player),
+    None,
+    Unwinnable,
 }
 
 fn click_gridcell(
@@ -68,13 +76,50 @@ fn check_winner(updated: In<bool>, cells: Query<(&Pos, &Option<Player>), With<Gr
         let grid: Array2D<Option<Player>> = unsafe {
             let mut grid = Array2D::filled_with(None, 3, 3);
             cells.iter().for_each(|(Pos(x, y), player)| {
-                grid.get_mut((x + 1) as usize, (y + 1) as usize).map(|p| *p = player.clone());
+                grid.get_mut((x + 1) as usize, (y + 1) as usize)
+                    .map(|p| *p = player.clone());
             });
             grid
         };
 
         println!("State of board: {:?}", grid);
+
+        println!("{:?}", has_winner(grid));
     }
+}
+
+fn slice_all<T: Eq>(slice: &[T]) -> Option<&T> {
+    if slice.windows(2).all(|t| t[0] == t[1]) {
+        Some(&slice[0])
+    } else {
+        None
+    }
+}
+
+fn has_winner(board: Array2D<Option<Player>>) -> Winner {
+    let winning_sets = (board.rows_iter().map(|it| it.collect::<Vec<_>>()))
+        .chain(board.columns_iter().map(|it| it.collect::<Vec<_>>()))
+        .chain(once(
+            (0..3).map(|i| board.get(i, i).unwrap()).collect::<Vec<_>>(),
+        ))
+        .chain(once(
+            (0..3)
+                .map(|i| board.get(i, 2 - i).unwrap())
+                .collect::<Vec<_>>(),
+        ));
+
+    // println!(
+    //     "Everything that wins: {:?}",
+    //     winning_sets.collect::<Vec<_>>()
+    // );
+
+    for set in winning_sets {
+        if let Some(Some(player)) = slice_all(set.as_slice()) {
+            return Winner::Some(player.clone())
+        }
+    }
+
+    Winner::None
 }
 
 pub struct GameLogic;
