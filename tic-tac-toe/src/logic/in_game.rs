@@ -1,10 +1,11 @@
 use super::prelude::*;
+use crate::Orientation::Vertical;
 use array2d::Array2D;
+use bevy::app::Events;
 use bevy::input::mouse::MouseButtonInput;
 use bevy::input::ElementState;
 use std::iter::once;
 use std::ops::{Deref, DerefMut};
-use bevy::app::Events;
 
 #[derive(Debug)]
 struct Turn(Player);
@@ -28,6 +29,8 @@ enum Winner {
     None,
     Draw,
 }
+
+struct PostGameText;
 
 fn click_gridcell(
     pos: Res<CursorPosition>,
@@ -75,6 +78,8 @@ fn check_winner(
     updated: In<bool>,
     cells: Query<(&Pos, &Option<Player>), With<GridCell>>,
     mut state: ResMut<State<GameState>>,
+    commands: Commands,
+    asset_server: ResMut<AssetServer>,
 ) {
     if updated.0 {
         let grid: Array2D<Option<Player>> = {
@@ -86,12 +91,22 @@ fn check_winner(
             grid
         };
 
-        match has_winner(grid) {
-            Winner::Some(_) | Winner::Draw => {
-                state.set(GameState::Won);
-            }
-            _ => (),
-        };
+        let w = has_winner(grid);
+        if matches!(w, Winner::Some(_) | Winner::Draw) {
+            state.set(GameState::Won);
+            show_text(w, commands, asset_server)
+        }
+        // match has_winner(grid) {
+        //     Winner::Some(p) => {
+        //         state.set(GameState::Won);
+        //         show_text(Winner::Some(p), commands, font)
+        //     }
+        //     Winner::Draw => {
+        //         state.set(GameState::Won);
+        //         show_text(Winner::Draw, commands, font);
+        //     }
+        //     _ => (),
+        // };
     }
 }
 
@@ -154,15 +169,45 @@ fn reset_onclick(
     }
 }
 
+fn show_text(winner: Winner, mut commands: Commands, mut assets: ResMut<AssetServer>) {
+    commands.spawn_bundle(Text2dBundle {
+        text: Text::with_section(
+            match winner {
+                Winner::Some(player) => format!("Winner is {:?}! ", player),
+                Winner::Draw => format!("No winner. "),
+                _ => unreachable!(),
+            },
+            TextStyle {
+                font: assets.load("/usr/share/fonts/TTF/DejaVuSans.ttf"),
+                font_size: 20.0,
+                color: Default::default(),
+            },
+            TextAlignment {
+                vertical: VerticalAlign::Center,
+                horizontal: HorizontalAlign::Center,
+            },
+        ),
+        transform: Transform::from_translation(Vec2::new(0.0, 320.0).extend(0.0)),
+        ..Default::default()
+    });
+}
+
 pub struct GameLogic;
 impl Plugin for GameLogic {
     fn build(&self, app: &mut AppBuilder) {
         app.add_state(GameState::Playing)
             .insert_resource(Turn(Player::Red))
-            .add_system_set(SystemSet::on_update(GameState::Playing).with_system(click_gridcell.system().chain(check_winner.system())))
+            .insert_resource(Winner::None)
+            .add_system_set(
+                SystemSet::on_update(GameState::Playing)
+                    .with_system(click_gridcell.system().chain(check_winner.system())),
+            )
             .add_system_set(SystemSet::on_enter(GameState::Won).with_system(drain_clicks.system()))
-            .add_system_set(SystemSet::on_enter(GameState::Playing).with_system(drain_clicks.system()))
-            .add_system_set(SystemSet::on_update(GameState::Won).with_system(reset_onclick.system()))
-        ;
+            .add_system_set(
+                SystemSet::on_enter(GameState::Playing).with_system(drain_clicks.system()),
+            )
+            .add_system_set(
+                SystemSet::on_update(GameState::Won).with_system(reset_onclick.system()),
+            );
     }
 }
