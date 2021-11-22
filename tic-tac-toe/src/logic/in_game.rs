@@ -152,15 +152,18 @@ fn drain_clicks(mut clicks: ResMut<Events<MouseButtonInput>>) {
 }
 
 fn reset_onclick(
+    mut commands: Commands,
     mut clicks: EventReader<MouseButtonInput>,
     mut textures: Query<&mut Visible, With<Marker>>,
     mut cells: Query<&mut Option<Player>, With<GridCell>>,
     mut state: ResMut<State<GameState>>,
+    text: Query<Entity, With<PostGameText>>
 ) {
     if let Some(_) = clicks
         .iter()
         .find(|x| x.button == MouseButton::Left && x.state == ElementState::Pressed)
     {
+        text.iter().for_each(|text| commands.entity(text).despawn());
         textures.iter_mut().for_each(|mut tex| {
             tex.is_visible = false;
         });
@@ -176,7 +179,7 @@ fn show_text(winner: Winner, mut commands: Commands, mut assets: ResMut<AssetSer
                 Winner::Some(player) => format!("Winner is {:?}! ", player),
                 Winner::Draw => format!("No winner. "),
                 _ => unreachable!(),
-            },
+            } + "Click anywhere to restart",
             TextStyle {
                 font: assets.load("/usr/share/fonts/TTF/DejaVuSans.ttf"),
                 font_size: 20.0,
@@ -189,7 +192,7 @@ fn show_text(winner: Winner, mut commands: Commands, mut assets: ResMut<AssetSer
         ),
         transform: Transform::from_translation(Vec2::new(0.0, 320.0).extend(0.0)),
         ..Default::default()
-    });
+    }).insert(PostGameText);
 }
 
 pub struct GameLogic;
