@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "tic-tac-toe",
+    "platformer",
 ]
 
 [profile.dev.package."*"]
