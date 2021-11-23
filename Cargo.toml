@@ -2,6 +2,7 @@
 members = [
     "tic-tac-toe",
     "platformer",
+    "chess",
 ]
 
 [profile.dev.package."*"]
