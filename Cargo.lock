@@ -504,6 +504,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_rapier2d"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f30e09ee07dece801f85250d2236c9b9113c76598ac0d7b79cc4cad7223eafe"
+dependencies = [
+ "bevy",
+ "nalgebra",
+ "rapier2d",
+]
+
+[[package]]
 name = "bevy_reflect"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -886,6 +897,9 @@ checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
 [[package]]
 name = "chess"
 version = "0.1.0"
+dependencies = [
+ "bevy",
+]
 
 [[package]]
 name = "chrono"
@@ -2386,6 +2400,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d506eb7e08d6329505faa8a3a00a5dcc6de9f76e0c77e4b75763ae3c770831ff"
 dependencies = [
  "approx",
+ "glam 0.13.1",
  "matrixmultiply",
  "nalgebra-macros",
  "num-complex",
@@ -2849,7 +2864,8 @@ checksum = "12295df4f294471248581bc09bef3c38a5e46f1e36d6a37353621a0c6c357e1f"
 name = "platformer"
 version = "0.1.0"
 dependencies = [
- "rapier2d",
+ "bevy",
+ "bevy_rapier2d",
 ]
 
 [[package]]
