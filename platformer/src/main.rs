@@ -2,21 +2,23 @@ use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 use bevy::render::pass::ClearColor;
+use bevy_prototype_lyon::prelude::*;
 use nalgebra::Isometry2;
 
 fn main() {
     App::build()
-        .insert_resource(ClearColor(Color::rgb(
-            0xF9 as f32 / 255.0,
-            0xF9 as f32 / 255.0,
-            0xFF as f32 / 255.0,
-        )))
+        // .insert_resource(ClearColor(Color::rgb(
+        //     0xF9 as f32 / 255.0,
+        //     0xF9 as f32 / 255.0,
+        //     0xFF as f32 / 255.0,
+        // )))
         .insert_resource(WindowDescriptor {
             title: format!("win0"),
             ..Default::default()
         })
         .insert_resource(Msaa::default())
         .add_plugins(DefaultPlugins)
+        .add_plugin(ShapePlugin)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .add_plugin(RapierRenderPlugin)
         .add_startup_system(setup_graphics.system())
@@ -42,14 +44,26 @@ fn setup_graphics(mut commands: Commands, mut configuration: ResMut<RapierConfig
 }
 
 pub fn setup_physics(mut commands: Commands) {
-    commands
+    //platform
+    let floor = commands
         .spawn_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(1000.0, 1.0),
             ..Default::default()
         })
+        .insert_bundle(GeometryBuilder::build_as(
+            &shapes::Rectangle {
+                width: 1000.0,
+                height: 1.0,
+                origin: shapes::RectangleOrigin::Center,
+            },
+            ShapeColors::new(Color::ORANGE_RED),
+            DrawMode::Fill(Default::default()),
+            Transform::default(),
+        ))
         .insert(ColliderDebugRender::default())
         .insert(ColliderPositionSync::Discrete);
 
+    //cube
     commands
         .spawn_bundle(RigidBodyBundle {
             position: [0.0, 10.0].into(),
@@ -61,5 +75,4 @@ pub fn setup_physics(mut commands: Commands) {
         })
         .insert(ColliderDebugRender::with_id(0))
         .insert(ColliderPositionSync::Discrete);
-
 }
