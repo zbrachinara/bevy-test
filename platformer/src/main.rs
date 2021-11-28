@@ -14,17 +14,17 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_startup_system(setup_graphics.system().label("setup_graphics"))
-        .add_startup_system(setup_physics.system().after("setup_graphics"))
+        .insert_resource(RapierConfiguration {
+            scale: 2.0,
+            ..Default::default()
+        })
+        .add_startup_system(spawn_objects.system())
         .run();
 }
 
-fn setup_graphics(mut commands: Commands, mut configuration: ResMut<RapierConfiguration>) {
-    configuration.scale = 2.8;
+fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
-}
 
-pub fn setup_physics(mut commands: Commands, conf: Res<RapierConfiguration>) {
     const floor_width: f32 = 1000.0;
     const floor_height: f32 = 5.0;
     //platform
