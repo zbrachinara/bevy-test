@@ -7,20 +7,13 @@ use nalgebra::Isometry2;
 
 fn main() {
     App::build()
-        // .insert_resource(ClearColor(Color::rgb(
-        //     0xF9 as f32 / 255.0,
-        //     0xF9 as f32 / 255.0,
-        //     0xFF as f32 / 255.0,
-        // )))
         .insert_resource(WindowDescriptor {
             title: format!("win0"),
             ..Default::default()
         })
-        .insert_resource(Msaa::default())
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-        // .add_plugin(RapierRenderPlugin)
         .add_startup_system(setup_graphics.system().label("setup_graphics"))
         .add_startup_system(setup_physics.system().after("setup_graphics"))
         .run();
@@ -28,19 +21,7 @@ fn main() {
 
 fn setup_graphics(mut commands: Commands, mut configuration: ResMut<RapierConfiguration>) {
     configuration.scale = 2.8;
-
-    let mut camera = OrthographicCameraBundle::new_2d();
-    camera.transform = Transform::from_translation(Vec3::new(0.0, 200.0, 0.0));
-    // commands.spawn_bundle(LightBundle {
-    //     transform: Transform::from_translation(Vec3::new(1000.0, 10.0, 2000.0)),
-    //     light: Light {
-    //         intensity: 100_000_000_.0,
-    //         range: 6000.0,
-    //         ..Default::default()
-    //     },
-    //     ..Default::default()
-    // });
-    commands.spawn_bundle(camera);
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 }
 
 pub fn setup_physics(mut commands: Commands, conf: Res<RapierConfiguration>) {
@@ -62,7 +43,6 @@ pub fn setup_physics(mut commands: Commands, conf: Res<RapierConfiguration>) {
             DrawMode::Fill(Default::default()),
             Transform::default(),
         ))
-        .insert(ColliderDebugRender::default())
         .insert(ColliderPositionSync::Discrete);
 
     //cube
@@ -87,6 +67,5 @@ pub fn setup_physics(mut commands: Commands, conf: Res<RapierConfiguration>) {
             DrawMode::Fill(FillOptions::default()),
             Transform::default(),
         ))
-        .insert(ColliderDebugRender::with_id(0))
         .insert(ColliderPositionSync::Discrete);
 }
