@@ -21,8 +21,8 @@ fn main() {
         .add_plugin(ShapePlugin)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         // .add_plugin(RapierRenderPlugin)
-        .add_startup_system(setup_graphics.system())
-        .add_startup_system(setup_physics.system())
+        .add_startup_system(setup_graphics.system().label("setup_graphics"))
+        .add_startup_system(setup_physics.system().after("setup_graphics"))
         .run();
 }
 
