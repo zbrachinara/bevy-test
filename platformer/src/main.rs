@@ -38,13 +38,17 @@ struct Player;
 fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
 
-    const floor_width: f32 = 1000.0;
+    const floor_width: f32 = 2000.0;
     const floor_height: f32 = 5.0;
     //platform
     let floor = commands
         .spawn()
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(floor_width / 2.0, floor_height / 2.0),
+            material: ColliderMaterial {
+                friction: 0.99,
+                ..Default::default()
+            },
             ..Default::default()
         })
         .insert_bundle(GeometryBuilder::build_as(
@@ -70,6 +74,10 @@ fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
                 ..Default::default()
             },
             mass_properties: (RigidBodyMassPropsFlags::ROTATION_LOCKED).into(),
+            damping: RigidBodyDamping {
+                linear_damping: 0.99,
+                ..Default::default()
+            },
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
