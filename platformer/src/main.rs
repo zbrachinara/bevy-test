@@ -1,9 +1,8 @@
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-
-use bevy::render::pass::ClearColor;
 use bevy_prototype_lyon::prelude::*;
-use nalgebra::Isometry2;
+use bevy_rapier2d::na::{Const, Matrix2, Vector2};
+use crate::nalgebra::ArrayStorage;
 
 fn main() {
     App::build()
@@ -19,8 +18,24 @@ fn main() {
             ..Default::default()
         })
         .add_startup_system(spawn_objects.system())
+        .add_system(input.system())
         .run();
 }
+
+fn input(mut player: Query<&mut RigidBodyVelocity, With<Player>>, key: Res<Input<KeyCode>>) {
+    if let Ok(mut vel) = player.single_mut() {
+        if key.pressed(KeyCode::D) {
+            vel.linvel.x += 5.0;
+            vel.angvel = 0.0;
+        }
+        if key.pressed(KeyCode::A) {
+            vel.linvel.x -= 5.0;
+            vel.angvel = 0.0;
+        }
+    }
+}
+
+struct Player;
 
 fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
@@ -67,5 +82,6 @@ fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
             DrawMode::Fill(FillOptions::default()),
             Transform::default(),
         ))
+        .insert(Player)
         .insert(ColliderPositionSync::Discrete);
 }
