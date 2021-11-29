@@ -1,8 +1,6 @@
 use bevy::prelude::*;
-use bevy_rapier2d::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use bevy_rapier2d::na::{Const, Matrix2, Vector2};
-use crate::nalgebra::ArrayStorage;
+use bevy_rapier2d::prelude::*;
 
 fn main() {
     App::build()
@@ -44,7 +42,8 @@ fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
     const floor_height: f32 = 5.0;
     //platform
     let floor = commands
-        .spawn_bundle(ColliderBundle {
+        .spawn()
+        .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(floor_width / 2.0, floor_height / 2.0),
             ..Default::default()
         })
@@ -63,9 +62,14 @@ fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
     //cube
     const cube_size: f32 = 20.0;
     commands
-        .spawn_bundle(RigidBodyBundle {
+        .spawn()
+        .insert_bundle(RigidBodyBundle {
             position: [0.0, 40.0].into(),
-            ccd: RigidBodyCcd { ccd_enabled: true, ..Default::default()},
+            ccd: RigidBodyCcd {
+                ccd_enabled: true,
+                ..Default::default()
+            },
+            mass_properties: (RigidBodyMassPropsFlags::ROTATION_LOCKED).into(),
             ..Default::default()
         })
         .insert_bundle(ColliderBundle {
@@ -73,7 +77,7 @@ fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
             ..Default::default()
         })
         .insert_bundle(GeometryBuilder::build_as(
-            &shapes::Rectangle{
+            &shapes::Rectangle {
                 width: cube_size * conf.scale,
                 height: cube_size * conf.scale,
                 origin: shapes::RectangleOrigin::Center,
