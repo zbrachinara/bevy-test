@@ -20,7 +20,28 @@ fn main() {
         })
         .add_startup_system(spawn_objects.system())
         .add_system(player_movement.system())
+        .add_system(move_camera.system())
         .run();
+}
+
+fn move_camera(
+    mut transforms: QuerySet<(
+        Query<&mut Transform, With<MainCamera>>,
+        Query<&Transform, With<Player>>,
+    )>,
+    // mut velocity: Query<&mut RigidBodyVelocity, With<MainCamera>>,
+) {
+    const step: f32 = 0.01;
+
+    let player_transform = transforms.q1().single().ok().map(|borrow| borrow.clone());
+    let cam_transform = transforms.q0_mut().single_mut().ok();
+
+    if let Some((mut cam_transform, player_transform)) = cam_transform.zip(player_transform) {
+        let diff = player_transform.translation - cam_transform.translation;
+        if Vec3::abs(diff) > Vec2::splat(20.0).extend(0.0) {
+            cam_transform.translation += diff * step;
+        }
+    }
 }
 
 fn player_movement(
@@ -43,9 +64,12 @@ fn player_movement(
 }
 
 struct Player;
+struct MainCamera;
 
 fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands
+        .spawn_bundle(OrthographicCameraBundle::new_2d())
+        .insert(MainCamera);
 
     const floor_width: f32 = 2000.0;
     const floor_height: f32 = 5.0;
@@ -91,6 +115,7 @@ fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
         })
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(cube_size / 2.0, cube_size / 2.0),
+            flags: (ActiveEvents::CONTACT_EVENTS).into(),
             ..Default::default()
         })
         .insert_bundle(GeometryBuilder::build_as(
