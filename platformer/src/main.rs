@@ -1,3 +1,5 @@
+#![allow(non_upper_case_globals)]
+
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use bevy_rapier2d::prelude::*;
