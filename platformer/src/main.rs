@@ -12,23 +12,30 @@ fn main() {
         .add_plugin(ShapePlugin)
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         .insert_resource(RapierConfiguration {
-            scale: 2.0,
+            gravity: Vec2::new(0.0, -25.0).into(),
+            scale: 10.0,
             ..Default::default()
         })
         .add_startup_system(spawn_objects.system())
-        .add_system(input.system())
+        .add_system(player_movement.system())
         .run();
 }
 
-fn input(mut player: Query<&mut RigidBodyVelocity, With<Player>>, key: Res<Input<KeyCode>>) {
+fn player_movement(
+    mut player: Query<&mut RigidBodyVelocity, With<Player>>,
+    key: Res<Input<KeyCode>>,
+) {
     if let Ok(mut vel) = player.single_mut() {
-        if key.pressed(KeyCode::D) {
-            vel.linvel.x += 5.0;
-            vel.angvel = 0.0;
-        }
-        if key.pressed(KeyCode::A) {
-            vel.linvel.x -= 5.0;
-            vel.angvel = 0.0;
+        const lateral_power: f32 = 1.2;
+        const max_lateral_power: f32 = 20.0;
+
+        if vel.linvel.x.abs() <= max_lateral_power {
+            if key.pressed(KeyCode::D) {
+                vel.linvel.x += lateral_power;
+            }
+            if key.pressed(KeyCode::A) {
+                vel.linvel.x -= lateral_power;
+            }
         }
     }
 }
@@ -46,7 +53,7 @@ fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(floor_width / 2.0, floor_height / 2.0),
             material: ColliderMaterial {
-                friction: 0.99,
+                friction: 0.7,
                 ..Default::default()
             },
             ..Default::default()
@@ -64,11 +71,11 @@ fn spawn_objects(mut commands: Commands, conf: Res<RapierConfiguration>) {
         .insert(ColliderPositionSync::Discrete);
 
     //cube
-    const cube_size: f32 = 20.0;
+    const cube_size: f32 = 5.5;
     commands
         .spawn()
         .insert_bundle(RigidBodyBundle {
-            position: [0.0, 40.0].into(),
+            position: [0.0, 10.5].into(),
             ccd: RigidBodyCcd {
                 ccd_enabled: true,
                 ..Default::default()
