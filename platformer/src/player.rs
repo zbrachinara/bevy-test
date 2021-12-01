@@ -36,19 +36,23 @@ pub fn is_player_colliding(
 pub fn player_movement(
     mut player: Query<&mut RigidBodyVelocity, With<PlayerEntity>>,
     key: Res<Input<KeyCode>>,
+    is_contacting: Res<IsPlayerContacting>,
 ) {
     if let Ok(mut vel) = player.single_mut() {
         const lateral_power: f32 = 1.2;
         const max_lateral_power: f32 = 20.0;
 
-        if vel.linvel.x.abs() <= max_lateral_power {
-            if key.pressed(KeyCode::D) {
-                vel.linvel.x += lateral_power;
-            }
-            if key.pressed(KeyCode::A) {
-                vel.linvel.x -= lateral_power;
+        if **is_contacting {
+            if vel.linvel.x.abs() <= max_lateral_power {
+                if key.pressed(KeyCode::D) {
+                    vel.linvel.x += lateral_power;
+                }
+                if key.pressed(KeyCode::A) {
+                    vel.linvel.x -= lateral_power;
+                }
             }
         }
+
     }
 }
 
