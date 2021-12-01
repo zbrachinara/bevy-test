@@ -1,6 +1,27 @@
 use crate::prelude::*;
+use crate::Platform;
+use derive_more::{Deref, DerefMut};
 
 pub struct Player;
+#[derive(Deref, DerefMut, Debug)]
+pub struct IsPlayerColliding(pub bool);
+
+pub fn is_player_colliding(
+    player_handle: Query<Entity, With<Player>>,
+    platform_handles: Query<Entity, With<Platform>>,
+    collision_checker: Res<NarrowPhase>,
+    mut out: ResMut<IsPlayerColliding>,
+) {
+    if let Ok(player) = player_handle.single() {
+        **out = platform_handles.iter().any(|collider| {
+            match collision_checker.contact_pair(player.handle(), collider.handle()) {
+                Some(pair) => pair.has_any_active_contact,
+                None => false,
+            }
+        });
+        // println!("Is colliding? {}", colliding);
+    };
+}
 
 pub fn player_movement(
     mut player: Query<&mut RigidBodyVelocity, With<Player>>,

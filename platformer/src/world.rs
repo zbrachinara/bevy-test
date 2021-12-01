@@ -1,6 +1,7 @@
 use crate::prelude::*;
 
 pub struct MainCamera;
+pub struct Platform;
 
 pub fn move_camera(
     mut transforms: QuerySet<(
@@ -48,5 +49,6 @@ pub fn spawn_scene(mut commands: Commands, conf: Res<RapierConfiguration>) {
             DrawMode::Fill(Default::default()),
             Transform::default(),
         ))
+        .insert(Platform)
         .insert(ColliderPositionSync::Discrete);
 }
