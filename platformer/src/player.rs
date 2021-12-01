@@ -29,7 +29,6 @@ pub fn is_player_colliding(
                 None => false,
             }
         });
-        // println!("Is colliding? {}", colliding);
     };
 }
 
