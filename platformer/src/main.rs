@@ -30,7 +30,7 @@ fn main() {
     App::build()
         .add_plugin(UpstreamPlugins)
         .insert_resource(RapierConfiguration {
-            gravity: Vec2::new(0.0, -25.0).into(),
+            gravity: Vec2::new(0.0, -40.0).into(),
             scale: 10.0,
             ..Default::default()
         })

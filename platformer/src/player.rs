@@ -39,24 +39,27 @@ pub fn player_movement(
     is_contacting: Res<IsPlayerContacting>,
 ) {
     if let Ok(mut vel) = player.single_mut() {
-        const lateral_power: f32 = 1.2;
         const max_lateral_power: f32 = 20.0;
 
-        if **is_contacting {
-            if vel.linvel.x.abs() <= max_lateral_power {
-                if key.pressed(KeyCode::D) {
-                    vel.linvel.x += lateral_power;
-                }
-                if key.pressed(KeyCode::A) {
-                    vel.linvel.x -= lateral_power;
-                }
-            }
+        let lateral_power = match **is_contacting {
+            true => 1.2,
+            false => 0.6,
+        };
 
+        if **is_contacting {
             if key.pressed(KeyCode::W) {
-                vel.linvel.y += 10.0;
+                vel.linvel.y += 20.0;
             }
         }
 
+        if vel.linvel.x.abs() <= max_lateral_power {
+            if key.pressed(KeyCode::D) {
+                vel.linvel.x += lateral_power;
+            }
+            if key.pressed(KeyCode::A) {
+                vel.linvel.x -= lateral_power;
+            }
+        }
     }
 }
 
@@ -72,7 +75,7 @@ pub fn spawn_player(mut commands: Commands, conf: Res<RapierConfiguration>) {
             },
             mass_properties: (RigidBodyMassPropsFlags::ROTATION_LOCKED).into(),
             damping: RigidBodyDamping {
-                linear_damping: 0.99,
+                linear_damping: 0.3,
                 ..Default::default()
             },
             ..Default::default()
