@@ -51,6 +51,10 @@ pub fn player_movement(
                     vel.linvel.x -= lateral_power;
                 }
             }
+
+            if key.pressed(KeyCode::W) {
+                vel.linvel.y += 10.0;
+            }
         }
 
     }
