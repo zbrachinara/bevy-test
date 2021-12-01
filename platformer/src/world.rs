@@ -6,7 +6,7 @@ pub struct Platform;
 pub fn move_camera(
     mut transforms: QuerySet<(
         Query<&mut Transform, With<MainCamera>>,
-        Query<&Transform, With<crate::player::Player>>,
+        Query<&Transform, With<crate::player::PlayerEntity>>,
     )>,
 ) {
     const step: f32 = 0.01;

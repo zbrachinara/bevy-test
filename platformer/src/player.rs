@@ -2,12 +2,22 @@ use crate::prelude::*;
 use crate::Platform;
 use derive_more::{Deref, DerefMut};
 
-pub struct Player;
+pub struct PlayerPlugin;
+impl Plugin for PlayerPlugin {
+    fn build(&self, app: &mut AppBuilder) {
+        app.add_system(player_movement.system())
+            .add_system(is_player_colliding.system())
+            .add_startup_system(spawn_player.system())
+            .insert_resource(IsPlayerColliding(false));
+    }
+}
+
+pub struct PlayerEntity;
 #[derive(Deref, DerefMut, Debug)]
 pub struct IsPlayerColliding(pub bool);
 
 pub fn is_player_colliding(
-    player_handle: Query<Entity, With<Player>>,
+    player_handle: Query<Entity, With<PlayerEntity>>,
     platform_handles: Query<Entity, With<Platform>>,
     collision_checker: Res<NarrowPhase>,
     mut out: ResMut<IsPlayerColliding>,
@@ -24,7 +34,7 @@ pub fn is_player_colliding(
 }
 
 pub fn player_movement(
-    mut player: Query<&mut RigidBodyVelocity, With<Player>>,
+    mut player: Query<&mut RigidBodyVelocity, With<PlayerEntity>>,
     key: Res<Input<KeyCode>>,
 ) {
     if let Ok(mut vel) = player.single_mut() {
@@ -74,6 +84,6 @@ pub fn spawn_player(mut commands: Commands, conf: Res<RapierConfiguration>) {
             DrawMode::Fill(FillOptions::default()),
             Transform::default(),
         ))
-        .insert(Player)
+        .insert(PlayerEntity)
         .insert(ColliderPositionSync::Discrete);
 }

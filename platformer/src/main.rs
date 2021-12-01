@@ -34,16 +34,12 @@ fn main() {
             scale: 10.0,
             ..Default::default()
         })
-        .insert_resource(IsPlayerColliding(false))
+        // .insert_resource(IsPlayerColliding(false))
         .add_startup_system(spawn_scene.system())
-        .add_startup_system(spawn_player.system())
-        .add_system(player_movement.system())
+        // .add_startup_system(spawn_player.system())
+        // .add_system(player_movement.system())
         .add_system(move_camera.system())
-        // inspect IsPlayerColliding
-        .add_system(
-            (|res: Res<IsPlayerColliding>| println!("state of Res<IsPlayerColliding>: {:?}", *res))
-                .system(),
-        )
-        .add_system(is_player_colliding.system())
+        // .add_system(is_player_colliding.system())
+        .add_plugin(PlayerPlugin)
         .run();
 }
