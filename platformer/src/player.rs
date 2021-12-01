@@ -8,19 +8,19 @@ impl Plugin for PlayerPlugin {
         app.add_system(player_movement.system())
             .add_system(is_player_colliding.system())
             .add_startup_system(spawn_player.system())
-            .insert_resource(IsPlayerColliding(false));
+            .insert_resource(IsPlayerContacting(false));
     }
 }
 
 pub struct PlayerEntity;
 #[derive(Deref, DerefMut, Debug)]
-pub struct IsPlayerColliding(pub bool);
+pub struct IsPlayerContacting(pub bool);
 
 pub fn is_player_colliding(
     player_handle: Query<Entity, With<PlayerEntity>>,
     platform_handles: Query<Entity, With<Platform>>,
     collision_checker: Res<NarrowPhase>,
-    mut out: ResMut<IsPlayerColliding>,
+    mut out: ResMut<IsPlayerContacting>,
 ) {
     if let Ok(player) = player_handle.single() {
         **out = platform_handles.iter().any(|collider| {
