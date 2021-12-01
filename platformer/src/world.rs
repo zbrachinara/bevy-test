@@ -28,8 +28,7 @@ pub fn spawn_scene(mut commands: Commands, conf: Res<RapierConfiguration>) {
 
     const floor_width: f32 = 2000.0;
     const floor_height: f32 = 5.0;
-    //platform
-    let floor = commands
+    commands
         .spawn()
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(floor_width / 2.0, floor_height / 2.0),
