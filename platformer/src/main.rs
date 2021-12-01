@@ -16,13 +16,13 @@ use world::*;
 struct UpstreamPlugins;
 impl Plugin for UpstreamPlugins {
     fn build(&self, app: &mut AppBuilder) {
-        app
-            .insert_resource(WindowDescriptor {
-                title: format!("win0"),
-                ..Default::default()
-            }).add_plugins(DefaultPlugins)
-            .add_plugin(ShapePlugin)
-            .add_plugin(RapierPhysicsPlugin::<NoUserData>::default());
+        app.insert_resource(WindowDescriptor {
+            title: format!("win0"),
+            ..Default::default()
+        })
+        .add_plugins(DefaultPlugins)
+        .add_plugin(ShapePlugin)
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::default());
     }
 }
 
@@ -40,4 +40,3 @@ fn main() {
         .add_system(move_camera.system())
         .run();
 }
-
