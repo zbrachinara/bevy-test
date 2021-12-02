@@ -29,10 +29,14 @@ pub fn spawn_scene(mut commands: Commands, conf: Res<RapierConfiguration>) {
 
     const floor_width: f32 = 2000.0;
     const floor_height: f32 = 5.0;
+    spawn_platform(&mut commands, conf.scale, floor_width, floor_height);
+}
+
+fn spawn_platform(commands: &mut Commands, scale: f32, width: f32, height: f32) {
     commands
         .spawn()
         .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(floor_width / 2.0, floor_height / 2.0),
+            shape: ColliderShape::cuboid(width / 2.0, height / 2.0),
             material: ColliderMaterial {
                 friction: 0.9,
                 ..Default::default()
@@ -41,8 +45,8 @@ pub fn spawn_scene(mut commands: Commands, conf: Res<RapierConfiguration>) {
         })
         .insert_bundle(GeometryBuilder::build_as(
             &shapes::Rectangle {
-                width: floor_width * conf.scale,
-                height: floor_height * conf.scale,
+                width: width * scale,
+                height: height * scale,
                 origin: shapes::RectangleOrigin::Center,
             },
             ShapeColors::new(Color::ORANGE_RED),
