@@ -633,7 +633,8 @@ dependencies = [
 [[package]]
 name = "bevy_svg"
 version = "0.3.2"
-source = "git+https://github.com/Weasy666/bevy_svg?branch=bevy-0.5#63d4f892226cb9514aea24bf5cb8a642b77c07a9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b39a13234f43320a1dab4142239d89cbc4ea42c5e59a5334e9b85c5abc1dcdcd"
 dependencies = [
  "bevy",
  "lyon_geom",
