@@ -29,24 +29,25 @@ pub fn spawn_scene(mut commands: Commands, conf: Res<RapierConfiguration>) {
 
     const floor_width: f32 = 2000.0;
     const floor_height: f32 = 5.0;
-    spawn_platform(&mut commands, conf.scale, floor_width, floor_height);
+    spawn_platform(&mut commands, conf.scale, Size::new(floor_width, floor_height), Vec3::new(0.0, 5.0, 0.0));
 }
 
-fn spawn_platform(commands: &mut Commands, scale: f32, width: f32, height: f32) {
+fn spawn_platform(commands: &mut Commands, scale: f32, size: Size<f32>, pos: Vec3) {
     commands
         .spawn()
         .insert_bundle(ColliderBundle {
-            shape: ColliderShape::cuboid(width / 2.0, height / 2.0),
+            shape: ColliderShape::cuboid(size.width / 2.0, size.height / 2.0),
             material: ColliderMaterial {
                 friction: 0.9,
                 ..Default::default()
             },
+            position: ColliderPosition(Isometry::translation(pos.x, pos.y)),
             ..Default::default()
         })
         .insert_bundle(GeometryBuilder::build_as(
             &shapes::Rectangle {
-                width: width * scale,
-                height: height * scale,
+                width: size.width * scale,
+                height: size.height * scale,
                 origin: shapes::RectangleOrigin::Center,
             },
             ShapeColors::new(Color::ORANGE_RED),
