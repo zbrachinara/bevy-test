@@ -1,8 +1,8 @@
+use crate::Player;
 use bevy::ecs::system::Command;
 use bevy::prelude::*;
 use bevy_svg::prelude::*;
 use std::path::Path;
-use crate::Player;
 
 const SIZE: f32 = 200.0;
 
@@ -49,6 +49,7 @@ impl<P: AsRef<Path> + Send + Sync + 'static> Command for AddGridCell<P> {
                     SvgBuilder::from_file(path)
                         .origin(Origin::Center)
                         .scale(Vec2::new(SIZE / 200.0, SIZE / 200.0))
+                        .is_visible(false)
                         .build()
                         .unwrap(),
                 )

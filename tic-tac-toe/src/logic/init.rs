@@ -25,18 +25,11 @@ fn make_scene(mut commands: Commands) {
     });
 }
 
-fn hide_markers(mut q: Query<&mut Visible, Added<crate::gridcell::Marker>>) {
-    q.iter_mut().for_each(|mut visible| {
-        visible.is_visible = false;
-    })
-}
-
 pub struct GameInit;
 impl Plugin for GameInit {
     fn build(&self, app: &mut AppBuilder) {
         static POST_SVG: &str = "POST_SVG";
         app.add_startup_system(make_scene.system())
-            .add_stage(POST_SVG, SystemStage::single_threaded())
-            .add_system_to_stage(POST_SVG, hide_markers.system());
+            .add_stage(POST_SVG, SystemStage::single_threaded());
     }
 }
