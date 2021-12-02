@@ -34,7 +34,7 @@ pub fn spawn_scene(mut commands: Commands, conf: Res<RapierConfiguration>) {
         .insert_bundle(ColliderBundle {
             shape: ColliderShape::cuboid(floor_width / 2.0, floor_height / 2.0),
             material: ColliderMaterial {
-                friction: 0.7,
+                friction: 0.9,
                 ..Default::default()
             },
             ..Default::default()
