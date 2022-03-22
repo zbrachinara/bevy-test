@@ -2898,6 +2898,7 @@ dependencies = [
  "bevy_prototype_lyon",
  "bevy_rapier2d",
  "derive_more",
+ "serde",
 ]
 
 [[package]]
